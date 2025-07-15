@@ -4,897 +4,388 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test Upload PDF - Lintas Pasal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
+        .main-card {
             background: white;
             border-radius: 20px;
             box-shadow: 0 25px 50px rgba(0,0,0,0.15);
             overflow: hidden;
         }
         
-        .header {
+        .header-gradient {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 40px;
-            text-align: center;
-            position: relative;
         }
         
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="1" fill="white" opacity="0.1"/><circle cx="10" cy="90" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-        }
-        
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            font-weight: 300;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .header p {
-            opacity: 0.9;
-            font-size: 1.2em;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .content {
-            padding: 50px;
-        }
-        
-        .upload-section {
-            margin-bottom: 50px;
-            background: #f8f9fa;
-            padding: 30px;
+        .upload-area {
+            border: 3px dashed #ddd;
             border-radius: 15px;
-            border: 2px dashed #dee2e6;
             transition: all 0.3s ease;
+            cursor: pointer;
         }
         
-        .upload-section:hover {
+        .upload-area:hover {
             border-color: #667eea;
-            background: #f0f8ff;
+            background: #f8f9ff;
         }
         
-        .upload-section.dragover {
+        .upload-area.dragover {
             border-color: #667eea;
-            background: #e7f3ff;
+            background: #f0f4ff;
             transform: scale(1.02);
         }
         
-        .form-group {
-            margin-bottom: 25px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 12px;
-            font-weight: 600;
-            color: #333;
-            font-size: 1.1em;
-        }
-        
-        input[type="file"] {
-            width: 100%;
-            padding: 25px;
-            border: 3px dashed #ccc;
-            border-radius: 15px;
-            background-color: white;
+        .file-list-item {
             transition: all 0.3s ease;
-            cursor: pointer;
-            font-size: 16px;
-            text-align: center;
         }
         
-        input[type="file"]:hover {
-            border-color: #667eea;
-            background-color: #f8f9fa;
+        .file-list-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         
-        input[type="file"]:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-        
-        .upload-btn {
+        .btn-gradient {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 18px 50px;
             border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 18px;
-            font-weight: 600;
-            width: 100%;
-            margin-top: 25px;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .upload-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
-        }
-        
-        .upload-btn:hover::before {
-            left: 100%;
-        }
-        
-        .upload-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
-        }
-        
-        .upload-btn:active {
-            transform: translateY(-1px);
-        }
-        
-        .upload-btn:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
-        }
-        
-        .result {
-            margin-top: 25px;
-            padding: 25px;
-            border-radius: 15px;
-            display: none;
-            font-size: 15px;
-            line-height: 1.6;
-            animation: slideIn 0.3s ease;
-        }
-        
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .success {
-            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-            border: 1px solid #c3e6cb;
-            color: #155724;
-            border-left: 5px solid #28a745;
-        }
-        
-        .error {
-            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
-            border: 1px solid #f5c6cb;
-            color: #721c24;
-            border-left: 5px solid #dc3545;
-        }
-        
-        .file-list {
-            border-top: 3px solid #e9ecef;
-            padding-top: 40px;
-            margin-top: 40px;
-        }
-        
-        .file-list h3 {
-            color: #333;
-            margin-bottom: 25px;
-            font-size: 1.6em;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .refresh-btn {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 30px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 25px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
-        }
-        
-        .refresh-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
-        }
-        
-        .file-item {
-            background: white;
-            padding: 25px;
-            border: 1px solid #e9ecef;
-            margin: 15px 0;
-            border-radius: 15px;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-        
-        .file-item:hover {
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-            transform: translateY(-3px);
-            border-color: #667eea;
-        }
-        
-        .file-item strong {
-            color: #333;
-            font-size: 18px;
-            display: block;
-            margin-bottom: 10px;
-        }
-        
-        .file-info {
-            margin: 10px 0;
-            color: #666;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .file-actions {
-            margin-top: 15px;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        
-        .download-btn {
-            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .download-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
-            text-decoration: none;
             color: white;
         }
         
-        .empty-state {
-            text-align: center;
-            color: #666;
-            font-style: italic;
-            padding: 50px;
-            background: #f8f9fa;
-            border-radius: 15px;
-            border: 2px dashed #dee2e6;
+        .btn-gradient:hover {
+            background: linear-gradient(135deg, #5a67d8 0%, #6b4ba0 100%);
+            color: white;
         }
         
-        .empty-state-icon {
-            font-size: 4em;
-            margin-bottom: 20px;
-            opacity: 0.3;
+        .progress-animated {
+            background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,.2) 25%, rgba(255,255,255,.2) 50%, transparent 50%, transparent 75%, rgba(255,255,255,.2) 75%);
+            background-size: 30px 30px;
+            animation: move 1s linear infinite;
         }
         
-        .loading {
-            text-align: center;
-            color: #666;
-            padding: 30px;
-            font-style: italic;
-        }
-        
-        .loading::after {
-            content: '';
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #666;
-            border-radius: 50%;
-            border-top-color: transparent;
-            animation: spin 1s linear infinite;
-            margin-left: 10px;
-        }
-        
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-        
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .stat-item {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            border: 1px solid #e9ecef;
-        }
-        
-        .stat-number {
-            font-size: 2em;
-            font-weight: bold;
-            color: #667eea;
-            display: block;
-        }
-        
-        .stat-label {
-            color: #666;
-            margin-top: 5px;
-            font-size: 14px;
-        }
-        
-        .drag-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(102, 126, 234, 0.1);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-        
-        .drag-overlay.active {
-            display: flex;
-        }
-        
-        .drag-message {
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-            text-align: center;
-            border: 3px dashed #667eea;
-        }
-        
-        .drag-message h3 {
-            color: #667eea;
-            margin-bottom: 10px;
-            font-size: 1.5em;
+        @keyframes move {
+            0% { background-position: 0 0; }
+            100% { background-position: 30px 0; }
         }
     </style>
 </head>
 <body>
-    <div class="drag-overlay" id="dragOverlay">
-        <div class="drag-message">
-            <h3>📄 Drop PDF file here!</h3>
-            <p>Lepaskan file PDF untuk upload</p>
-        </div>
-    </div>
-
-    <div class="container">
-        <div class="header">
-            <h1>📄 Test Upload PDF</h1>
-            <p>Upload dan kelola file PDF Anda dengan mudah</p>
-        </div>
-        
-        <div class="content">
-            <!-- Form Upload PDF -->
-            <div class="upload-section" id="uploadSection">
-                <div class="form-group">
-                    <label for="pdfFile">
-                        📎 Pilih File PDF atau Drag & Drop ke sini:
-                    </label>
-                    <input type="file" id="pdfFile" name="pdf" accept=".pdf" required>
-                    <div style="text-align: center; margin-top: 15px; color: #666; font-size: 14px;">
-                        Maksimal ukuran file: 10MB | Format: PDF
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="main-card">
+                    <!-- Header -->
+                    <div class="header-gradient text-center py-5">
+                        <h1 class="display-4 fw-bold mb-3">
+                            <i class="fas fa-file-pdf me-3"></i>Lintas Pasal
+                        </h1>
+                        <p class="lead mb-0">Konversi Dokumen PDF Menjadi Format Digital yang Mudah Dibaca</p>
+                    </div>
+                    
+                    <!-- Upload Section -->
+                    <div class="p-5">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <h3 class="mb-4 text-primary">
+                                    <i class="fas fa-cloud-upload-alt me-2"></i>Upload PDF
+                                </h3>
+                                
+                                <!-- Upload Form -->
+                                <form id="uploadForm" enctype="multipart/form-data">
+                                    <div class="upload-area text-center p-5 mb-4" onclick="document.getElementById('pdfFile').click()">
+                                        <div id="uploadContent">
+                                            <i class="fas fa-cloud-upload-alt text-primary mb-3" style="font-size: 3rem;"></i>
+                                            <h5 class="text-primary mb-2">Klik atau Drag & Drop PDF</h5>
+                                            <p class="text-muted mb-0">File maksimal 10MB</p>
+                                        </div>
+                                        <input type="file" id="pdfFile" name="pdf" accept=".pdf" style="display: none;">
+                                    </div>
+                                    
+                                    <!-- Progress Bar -->
+                                    <div id="progressContainer" class="mb-4" style="display: none;">
+                                        <div class="progress" style="height: 25px;">
+                                            <div id="progressBar" class="progress-bar progress-animated" role="progressbar" 
+                                                 style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                                <span id="progressText">0%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Upload Button -->
+                                    <div class="d-grid">
+                                        <button type="submit" id="uploadBtn" class="btn btn-gradient btn-lg" disabled>
+                                            <i class="fas fa-upload me-2"></i>Upload & Parse PDF
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <div class="col-lg-6">
+                                <h3 class="mb-4 text-success">
+                                    <i class="fas fa-list me-2"></i>File Tersimpan
+                                </h3>
+                                
+                                <!-- File List -->
+                                <div id="fileList" class="border rounded p-3" style="max-height: 400px; overflow-y: auto;">
+                                    <div class="text-center text-muted">
+                                        <i class="fas fa-folder-open mb-2" style="font-size: 2rem;"></i>
+                                        <p>Memuat daftar file...</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Refresh Button -->
+                                <div class="d-grid mt-3">
+                                    <button onclick="loadFileList()" class="btn btn-outline-primary">
+                                        <i class="fas fa-sync-alt me-2"></i>Refresh Daftar File
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
-                <!-- Action Buttons -->
-                <div style="display: flex; gap: 15px; margin-top: 25px;">
-                    <button id="uploadOnlyBtn" class="upload-btn" style="flex: 1;">
-                        📤 Upload Saja
-                    </button>
-                    <button id="uploadParseBtn" class="upload-btn" style="flex: 1; background: linear-gradient(135deg, #fd7e14 0%, #e63946 100%);">
-                        📤🔍 Upload & Parse
-                    </button>
+                <!-- Features Section -->
+                <div class="main-card mt-4">
+                    <div class="p-5">
+                        <h3 class="text-center mb-5 text-primary">
+                            <i class="fas fa-star me-2"></i>Fitur Unggulan
+                        </h3>
+                        <div class="row">
+                            <div class="col-md-4 text-center mb-4">
+                                <div class="card h-100 border-0 shadow-sm">
+                                    <div class="card-body">
+                                        <i class="fas fa-magic text-primary mb-3" style="font-size: 2.5rem;"></i>
+                                        <h5 class="card-title">Parser Otomatis</h5>
+                                        <p class="card-text">Ekstraksi teks otomatis dengan preservasi layout dokumen PDF</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-center mb-4">
+                                <div class="card h-100 border-0 shadow-sm">
+                                    <div class="card-body">
+                                        <i class="fas fa-search text-success mb-3" style="font-size: 2.5rem;"></i>
+                                        <h5 class="card-title">Navigasi Cerdas</h5>
+                                        <p class="card-text">Deteksi otomatis BAB dan Pasal untuk navigasi yang mudah</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-center mb-4">
+                                <div class="card h-100 border-0 shadow-sm">
+                                    <div class="card-body">
+                                        <i class="fas fa-mobile-alt text-warning mb-3" style="font-size: 2.5rem;"></i>
+                                        <h5 class="card-title">Responsif</h5>
+                                        <p class="card-text">Tampilan optimal di desktop, tablet, dan smartphone</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                
-                <div id="uploadResult" class="result"></div>
-                <div id="parseResult" class="result"></div>
-            </div>
-            
-            <!-- Statistics -->
-            <div class="stats" id="statsSection">
-                <div class="stat-item">
-                    <span class="stat-number" id="totalFiles">0</span>
-                    <div class="stat-label">Total File</div>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number" id="totalSize">0 MB</span>
-                    <div class="stat-label">Total Ukuran</div>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number" id="latestUpload">-</span>
-                    <div class="stat-label">Upload Terakhir</div>
-                </div>
-            </div>
-            
-            <!-- Daftar File PDF -->
-            <div class="file-list">
-                <h3>
-                    📂 File PDF yang Sudah Diupload
-                </h3>
-                <button onclick="loadFileList()" class="refresh-btn">
-                    🔄 Refresh Daftar File
-                </button>
-                <div id="fileList" class="loading">Memuat daftar file...</div>
             </div>
         </div>
     </div>
+    
+    <!-- Footer -->
+    <footer class="text-center text-white py-4 mt-5">
+        <div class="container">
+            <p class="mb-0">© 2025 Lintas Pasal - PDF Parser & Viewer</p>
+        </div>
+    </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Global variables
-        let isDragging = false;
-        let fileStats = {
-            totalFiles: 0,
-            totalSize: 0,
-            latestUpload: null
-        };
+        // File selection and upload handling
+        const pdfFile = document.getElementById('pdfFile');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const uploadForm = document.getElementById('uploadForm');
+        const uploadArea = document.querySelector('.upload-area');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+
+        // File input change event
+        pdfFile.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                const file = this.files[0];
+                uploadBtn.disabled = false;
+                document.getElementById('uploadContent').innerHTML = `
+                    <i class="fas fa-file-pdf text-success mb-3" style="font-size: 3rem;"></i>
+                    <h5 class="text-success mb-2">${file.name}</h5>
+                    <p class="text-muted mb-0">${(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                `;
+            }
+        });
 
         // Drag and drop functionality
-        document.addEventListener('dragover', function(e) {
+        uploadArea.addEventListener('dragover', function(e) {
             e.preventDefault();
-            if (!isDragging) {
-                isDragging = true;
-                document.getElementById('dragOverlay').classList.add('active');
-            }
+            this.classList.add('dragover');
         });
 
-        document.addEventListener('dragleave', function(e) {
-            if (e.clientX === 0 && e.clientY === 0) {
-                isDragging = false;
-                document.getElementById('dragOverlay').classList.remove('active');
-            }
+        uploadArea.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
         });
 
-        document.addEventListener('drop', function(e) {
+        uploadArea.addEventListener('drop', function(e) {
             e.preventDefault();
-            isDragging = false;
-            document.getElementById('dragOverlay').classList.remove('active');
+            this.classList.remove('dragover');
             
             const files = e.dataTransfer.files;
             if (files.length > 0 && files[0].type === 'application/pdf') {
-                document.getElementById('pdfFile').files = files;
+                pdfFile.files = files;
+                pdfFile.dispatchEvent(new Event('change'));
             } else {
-                showUploadResult('⚠️ Hanya file PDF yang diperbolehkan!', 'error');
+                alert('Harap pilih file PDF yang valid!');
             }
         });
 
-        // Upload section drag and drop
-        const uploadSection = document.getElementById('uploadSection');
-        uploadSection.addEventListener('dragover', function(e) {
+        // Form submission
+        uploadForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            uploadSection.classList.add('dragover');
-        });
-
-        uploadSection.addEventListener('dragleave', function(e) {
-            uploadSection.classList.remove('dragover');
-        });
-
-        uploadSection.addEventListener('drop', function(e) {
-            e.preventDefault();
-            uploadSection.classList.remove('dragover');
             
-            const files = e.dataTransfer.files;
-            if (files.length > 0 && files[0].type === 'application/pdf') {
-                document.getElementById('pdfFile').files = files;
-            }
-        });
-
-        // Upload form handler
-        document.getElementById('uploadOnlyBtn').addEventListener('click', async function(e) {
-            await handleFileAction('upload');
-        });
-
-        document.getElementById('uploadParseBtn').addEventListener('click', async function(e) {
-            await handleFileAction('upload-parse');
-        });
-
-        // Unified file action handler
-        async function handleFileAction(action) {
-            const fileInput = document.getElementById('pdfFile');
-            const uploadBtn = document.getElementById('uploadOnlyBtn');
-            const parseBtn = document.getElementById('uploadParseBtn');
-            
-            if (!fileInput.files[0]) {
-                showUploadResult('⚠️ Pilih file PDF terlebih dahulu!', 'error');
+            if (!pdfFile.files.length) {
+                alert('Pilih file PDF terlebih dahulu!');
                 return;
             }
 
-            // Validate file size (10MB)
-            if (fileInput.files[0].size > 10 * 1024 * 1024) {
-                showUploadResult('⚠️ Ukuran file terlalu besar! Maksimal 10MB.', 'error');
-                return;
-            }
-
-            // Validate file type
-            if (fileInput.files[0].type !== 'application/pdf') {
-                showUploadResult('⚠️ Hanya file PDF yang diperbolehkan!', 'error');
-                return;
-            }
-            
             const formData = new FormData();
-            formData.append('pdf', fileInput.files[0]);
-            
-            // Disable buttons and show loading
+            formData.append('pdf', pdfFile.files[0]);
+
             uploadBtn.disabled = true;
-            parseBtn.disabled = true;
-            
-            if (action === 'upload') {
-                uploadBtn.innerHTML = '⏳ Mengupload...';
-                await performUpload(formData);
-            } else if (action === 'upload-parse') {
-                parseBtn.innerHTML = '⏳ Upload & Parsing...';
-                await performUploadAndParse(formData);
-            }
-            
-            // Re-enable buttons
-            uploadBtn.disabled = false;
-            parseBtn.disabled = false;
-            uploadBtn.innerHTML = '📤 Upload Saja';
-            parseBtn.innerHTML = '📤🔍 Upload & Parse';
-        }
+            uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Uploading...';
+            progressContainer.style.display = 'block';
 
-        // Perform upload only
-        async function performUpload(formData) {
             try {
-                const response = await fetch('/api/upload-pdf', {
-                    method: 'POST',
-                    body: formData
+                const xhr = new XMLHttpRequest();
+                
+                xhr.upload.addEventListener('progress', function(e) {
+                    if (e.lengthComputable) {
+                        const percentComplete = (e.loaded / e.total) * 100;
+                        progressBar.style.width = percentComplete + '%';
+                        progressBar.setAttribute('aria-valuenow', percentComplete);
+                        progressText.textContent = Math.round(percentComplete) + '%';
+                    }
                 });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    showUploadResult(`
-                        ✅ <strong>${result.message}</strong><br>
-                        📁 <strong>File:</strong> ${result.data.originalName}<br>
-                        📊 <strong>Ukuran:</strong> ${(result.data.size / 1024 / 1024).toFixed(2)} MB<br>
-                        📅 <strong>Diupload:</strong> ${new Date().toLocaleString('id-ID')}<br>
-                        🗂️ <strong>Tersimpan sebagai:</strong> ${result.data.filename}
-                    `, 'success');
-                    document.getElementById('pdfFile').value = '';
-                    loadFileList(); // Refresh daftar file
-                } else {
-                    showUploadResult(`❌ ${result.message}`, 'error');
-                }
-            } catch (error) {
-                showUploadResult(`❌ Terjadi kesalahan: ${error.message}`, 'error');
-            }
-        }
 
-        // Perform upload and parse
-        async function performUploadAndParse(formData) {
-            try {
-                const response = await fetch('/api/parse-pdf', {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    showUploadResult(`
-                        ✅ <strong>File berhasil diupload!</strong><br>
-                        📁 <strong>File:</strong> ${result.data.originalName}<br>
-                        📊 <strong>Ukuran:</strong> ${(result.data.size / 1024 / 1024).toFixed(2)} MB<br>
-                        🗂️ <strong>Tersimpan sebagai:</strong> ${result.data.filename}
-                    `, 'success');
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        const response = JSON.parse(xhr.responseText);
+                        if (response.success) {
+                            alert('✅ File berhasil diupload dan diproses!');
+                            
+                            // Reset form
+                            uploadForm.reset();
+                            uploadBtn.disabled = true;
+                            uploadBtn.innerHTML = '<i class="fas fa-upload me-2"></i>Upload & Parse PDF';
+                            progressContainer.style.display = 'none';
+                            document.getElementById('uploadContent').innerHTML = `
+                                <i class="fas fa-cloud-upload-alt text-primary mb-3" style="font-size: 3rem;"></i>
+                                <h5 class="text-primary mb-2">Klik atau Drag & Drop PDF</h5>
+                                <p class="text-muted mb-0">File maksimal 10MB</p>
+                            `;
+                            
+                            // Reload file list
+                            loadFileList();
+                            
+                            // Show view option
+                            if (confirm('File berhasil diproses! Ingin melihat hasilnya sekarang?')) {
+                                window.open(`/api/view/${response.data.filename}`, '_blank');
+                            }
+                        } else {
+                            alert('❌ Error: ' + response.message);
+                        }
+                    } else {
+                        alert('❌ Terjadi kesalahan saat upload');
+                    }
                     
-                    showParseResult(`
-                        ✅ <strong>PDF berhasil diparsing dengan preservasi layout!</strong><br>
-                        🔍 <strong>Metode:</strong> ${result.data.extractionMethod}<br>
-                        📝 <strong>Karakter:</strong> ${result.data.textLength.toLocaleString('id-ID')}<br>
-                        📋 <strong>Preview:</strong><br>
-                        <div style="background: #f8f9fa; padding: 10px; border-radius: 5px; margin-top: 10px; font-family: monospace; font-size: 12px; max-height: 200px; overflow-y: auto;">
-                            ${result.data.previewText.replace(/\n/g, '<br>')}
-                        </div>
-                        <div style="margin-top: 15px;">
-                            <button onclick="viewParsedContent('${result.data.filename}')" class="download-btn" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
-                                👁️ Lihat Hasil Lengkap
-                            </button>
-                        </div>
-                    `, 'success');
-                    
-                    document.getElementById('pdfFile').value = '';
-                    loadFileList(); // Refresh daftar file
-                } else {
-                    showUploadResult(`❌ ${result.message}`, 'error');
-                }
+                    uploadBtn.disabled = false;
+                    uploadBtn.innerHTML = '<i class="fas fa-upload me-2"></i>Upload & Parse PDF';
+                    progressContainer.style.display = 'none';
+                };
+
+                xhr.onerror = function() {
+                    alert('❌ Terjadi kesalahan jaringan');
+                    uploadBtn.disabled = false;
+                    uploadBtn.innerHTML = '<i class="fas fa-upload me-2"></i>Upload & Parse PDF';
+                    progressContainer.style.display = 'none';
+                };
+
+                xhr.open('POST', '/api/upload');
+                xhr.send(formData);
+
             } catch (error) {
-                showUploadResult(`❌ Terjadi kesalahan: ${error.message}`, 'error');
-            }
-        }
-
-        // Copy download link to clipboard
-        function copyDownloadLink(filename) {
-            const link = `${window.location.origin}/api/download/${filename}`;
-            navigator.clipboard.writeText(link).then(() => {
-                showUploadResult(`🔗 Link download berhasil disalin: ${filename}`, 'success');
-            }).catch(() => {
-                showUploadResult(`❌ Gagal menyalin link download`, 'error');
-            });
-        }
-
-        // Parse PDF file yang sudah ada
-        async function parsePdfFile(filename) {
-            try {
-                showParseResult('⏳ Sedang parsing PDF...', 'success');
-                
-                const response = await fetch(`/api/parse/${filename}`);
-                const result = await response.json();
-                
-                if (result.success) {
-                    showParseResult(`
-                        ✅ <strong>${result.message}</strong><br>
-                        📄 <strong>File:</strong> ${result.data.filename}<br>
-                        🔍 <strong>Metode:</strong> ${result.data.extractionMethod}<br>
-                        📝 <strong>Karakter:</strong> ${result.data.textLength.toLocaleString('id-ID')}<br>
-                        📋 <strong>Preview:</strong><br>
-                        <div style="background: #f8f9fa; padding: 10px; border-radius: 5px; margin-top: 10px; font-family: monospace; font-size: 12px; max-height: 200px; overflow-y: auto;">
-                            ${result.data.previewText.replace(/\n/g, '<br>')}
-                        </div>
-                        <div style="margin-top: 15px;">
-                            <button onclick="viewParsedContent('${filename}')" class="download-btn" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
-                                👁️ Lihat Hasil Lengkap
-                            </button>
-                        </div>
-                    `, 'success');
-                } else {
-                    showParseResult(`❌ ${result.message}`, 'error');
-                }
-            } catch (error) {
-                showParseResult(`❌ Terjadi kesalahan: ${error.message}`, 'error');
-            }
-        }
-
-        // Parse form handler
-        document.getElementById('parseForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const formData = new FormData();
-            const fileInput = document.getElementById('parsePdfFile');
-            const parseBtn = document.querySelector('#parseForm .upload-btn');
-            
-            if (!fileInput.files[0]) {
-                showParseResult('⚠️ Pilih file PDF terlebih dahulu!', 'error');
-                return;
-            }
-
-            // Validate file size (10MB)
-            if (fileInput.files[0].size > 10 * 1024 * 1024) {
-                showParseResult('⚠️ Ukuran file terlalu besar! Maksimal 10MB.', 'error');
-                return;
-            }
-
-            // Validate file type
-            if (fileInput.files[0].type !== 'application/pdf') {
-                showParseResult('⚠️ Hanya file PDF yang diperbolehkan!', 'error');
-                return;
-            }
-            
-            // Disable button and show loading
-            parseBtn.disabled = true;
-            parseBtn.innerHTML = '⏳ Parsing PDF...';
-            
-            formData.append('pdf', fileInput.files[0]);
-            
-            try {
-                const response = await fetch('/api/parse-pdf', {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    showParseResult(`
-                        ✅ <strong>${result.message}</strong><br>
-                        📄 <strong>File:</strong> ${result.data.originalName}<br>
-                        🔍 <strong>Metode:</strong> ${result.data.extractionMethod}<br>
-                        📝 <strong>Karakter:</strong> ${result.data.textLength.toLocaleString('id-ID')}<br>
-                        📊 <strong>Ukuran:</strong> ${(result.data.size / 1024 / 1024).toFixed(2)} MB<br>
-                        📋 <strong>Preview:</strong><br>
-                        <div style="background: #f8f9fa; padding: 10px; border-radius: 5px; margin-top: 10px; font-family: monospace; font-size: 12px; max-height: 200px; overflow-y: auto;">
-                            ${result.data.previewText.replace(/\n/g, '<br>')}
-                        </div>
-                        <div style="margin-top: 15px;">
-                            <button onclick="viewParsedContent('${result.data.filename}')" class="download-btn" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
-                                👁️ Lihat Hasil Lengkap
-                            </button>
-                        </div>
-                    `, 'success');
-                    fileInput.value = '';
-                    loadFileList(); // Refresh daftar file
-                } else {
-                    showParseResult(`❌ ${result.message}`, 'error');
-                }
-            } catch (error) {
-                showParseResult(`❌ Terjadi kesalahan: ${error.message}`, 'error');
-            } finally {
-                // Re-enable button
-                parseBtn.disabled = false;
-                parseBtn.innerHTML = '🔍 Parse PDF';
+                alert('❌ Error: ' + error.message);
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = '<i class="fas fa-upload me-2"></i>Upload & Parse PDF';
+                progressContainer.style.display = 'none';
             }
         });
-
-        // Show parse result message
-        function showParseResult(message, type) {
-            const resultDiv = document.getElementById('parseResult');
-            resultDiv.className = `result ${type}`;
-            resultDiv.innerHTML = message;
-            resultDiv.style.display = 'block';
-            
-            // Auto hide after 15 seconds for parse results (longer than upload)
-            setTimeout(() => {
-                if (!message.includes('👁️ Lihat Hasil Lengkap')) {
-                    resultDiv.style.display = 'none';
-                }
-            }, 15000);
-        }
-
-        // View parsed content in new tab
-        function viewParsedContent(filename) {
-            window.open(`/api/view/${filename}`, '_blank');
-        }
-
-        // Update statistics
-        function updateStats(files) {
-            fileStats.totalFiles = files.length;
-            fileStats.totalSize = files.reduce((total, file) => total + file.size, 0);
-            fileStats.latestUpload = files.length > 0 ? 
-                new Date(Math.max(...files.map(f => new Date(f.uploadDate)))).toLocaleDateString('id-ID') : 
-                '-';
-
-            document.getElementById('totalFiles').textContent = fileStats.totalFiles;
-            document.getElementById('totalSize').textContent = (fileStats.totalSize / 1024 / 1024).toFixed(1) + ' MB';
-            document.getElementById('latestUpload').textContent = fileStats.latestUpload;
-        }
 
         // Load file list
         async function loadFileList() {
-            const fileListDiv = document.getElementById('fileList');
-            fileListDiv.innerHTML = '<div class="loading">⏳ Memuat daftar file...</div>';
-            
-            try {
-                const response = await fetch('/api/pdfs');
-                const result = await response.json();
-                
-                if (result.success && result.data.length > 0) {
-                    // Update statistics
-                    updateStats(result.data);
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = `
+                <div class="text-center text-muted">
+                    <i class="fas fa-spinner fa-spin mb-2" style="font-size: 2rem;"></i>
+                    <p>Memuat daftar file...</p>
+                </div>
+            `;
 
-                    fileListDiv.innerHTML = result.data.map(file => `
-                        <div class="file-item">
-                            <strong>📄 ${file.filename}</strong>
-                            <div class="file-info">
-                                📊 <strong>Ukuran:</strong> ${(file.size / 1024 / 1024).toFixed(2)} MB
-                            </div>
-                            <div class="file-info">
-                                📅 <strong>Upload:</strong> ${new Date(file.uploadDate).toLocaleString('id-ID')}
-                            </div>
-                            <div class="file-info">
-                                🕒 <strong>Modified:</strong> ${new Date(file.modifiedDate).toLocaleString('id-ID')}
-                            </div>
-                            <div class="file-actions">
-                                <a href="/api/download/${file.filename}" target="_blank" class="download-btn">
-                                    📥 Download
-                                </a>
-                                <button onclick="copyDownloadLink('${file.filename}')" class="download-btn" style="background: linear-gradient(135deg, #6c757d 0%, #495057 100%);">
-                                    🔗 Copy Link
-                                </button>
-                                <button onclick="parsePdfFile('${file.filename}')" class="download-btn" style="background: linear-gradient(135deg, #fd7e14 0%, #e63946 100%);">
-                                    🔍 Parse PDF
-                                </button>
+            try {
+                const response = await fetch('/api/files');
+                const data = await response.json();
+
+                if (data.success && data.files.length > 0) {
+                    fileList.innerHTML = data.files.map(file => `
+                        <div class="file-list-item border rounded p-3 mb-2 bg-light">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1 text-primary">
+                                        <i class="fas fa-file-pdf me-2"></i>${file.filename}
+                                    </h6>
+                                    <small class="text-muted">
+                                        ${(file.size / 1024 / 1024).toFixed(2)} MB • 
+                                        ${new Date(file.uploadDate).toLocaleDateString('id-ID')}
+                                    </small>
+                                </div>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="/api/view/${file.filename}" target="_blank" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="/api/download/${file.filename}" class="btn btn-success btn-sm">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     `).join('');
                 } else {
-                    // Update statistics for empty state
-                    updateStats([]);
-
-                    fileListDiv.innerHTML = `
-                        <div class="empty-state">
-                            <div class="empty-state-icon">📭</div>
-                            <h3>Belum ada file PDF yang diupload</h3>
-                            <p>Upload file PDF pertama Anda menggunakan form di atas</p>
+                    fileList.innerHTML = `
+                        <div class="text-center text-muted">
+                            <i class="fas fa-folder-open mb-2" style="font-size: 2rem;"></i>
+                            <p>Belum ada file PDF yang diupload</p>
                         </div>
                     `;
                 }
             } catch (error) {
-                fileListDiv.innerHTML = `
-                    <div class="empty-state" style="color: #dc3545; border-color: #dc3545;">
-                        <div class="empty-state-icon">❌</div>
-                        <h3>Error memuat daftar file</h3>
-                        <p>${error.message}</p>
+                fileList.innerHTML = `
+                    <div class="text-center text-danger">
+                        <i class="fas fa-exclamation-triangle mb-2" style="font-size: 2rem;"></i>
+                        <p>Gagal memuat daftar file</p>
                     </div>
                 `;
-                console.error('Error:', error);
             }
         }
 
         // Load file list on page load
-        window.addEventListener('load', function() {
-            loadFileList();
-            
-            // Add file input change listener for upload
-            document.getElementById('pdfFile').addEventListener('change', function(e) {
-                if (e.target.files[0]) {
-                    const file = e.target.files[0];
-                    if (file.type !== 'application/pdf') {
-                        showUploadResult('⚠️ File yang dipilih bukan PDF!', 'error');
-                        e.target.value = '';
-                    } else if (file.size > 10 * 1024 * 1024) {
-                        showUploadResult('⚠️ Ukuran file terlalu besar! Maksimal 10MB.', 'error');
-                        e.target.value = '';
-                    }
-                }
-            });
-
-            // Add file input change listener for parsing
-            document.getElementById('parsePdfFile').addEventListener('change', function(e) {
-                if (e.target.files[0]) {
-                    const file = e.target.files[0];
-                    if (file.type !== 'application/pdf') {
-                        showParseResult('⚠️ File yang dipilih bukan PDF!', 'error');
-                        e.target.value = '';
-                    } else if (file.size > 10 * 1024 * 1024) {
-                        showParseResult('⚠️ Ukuran file terlalu besar! Maksimal 10MB.', 'error');
-                        e.target.value = '';
-                    }
-                }
-            });
-        });
+        document.addEventListener('DOMContentLoaded', loadFileList);
     </script>
 </body>
 </html>
