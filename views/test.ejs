@@ -3,186 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Upload PDF - Lintas Pasal</title>
+    <title><%= title || 'Lintas Pasal' %></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    
+    <!-- Wikipedia-inspired fallback styles -->
     <style>
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        body { 
+            background: #f8f9fa;
             min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: #222;
         }
-        
-        .main-card {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
-            overflow: hidden;
+        .glass-card {
+            background: #ffffff;
+            border: 1px solid #a2a9b1;
+            border-radius: 2px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
-        
-        .header-gradient {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        
-        .upload-area {
-            border: 3px dashed #ddd;
-            border-radius: 15px;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        
-        .upload-area:hover {
-            border-color: #667eea;
-            background: #f8f9ff;
-        }
-        
-        .upload-area.dragover {
-            border-color: #667eea;
-            background: #f0f4ff;
-            transform: scale(1.02);
-        }
-        
-        .file-list-item {
-            transition: all 0.3s ease;
-        }
-        
-        .file-list-item:hover {
-            transform: translateX(5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        
         .btn-gradient {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
+            background: #0645ad;
+            border: 1px solid #0645ad;
             color: white;
+            border-radius: 2px;
         }
-        
-        .btn-gradient:hover {
-            background: linear-gradient(135deg, #5a67d8 0%, #6b4ba0 100%);
-            color: white;
-        }
-        
-        .progress-animated {
-            background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,.2) 25%, rgba(255,255,255,.2) 50%, transparent 50%, transparent 75%, rgba(255,255,255,.2) 75%);
-            background-size: 30px 30px;
-            animation: move 1s linear infinite;
-        }
-        
-        @keyframes move {
-            0% { background-position: 0 0; }
-            100% { background-position: 30px 0; }
+        .wiki-header {
+            background: #ffffff;
+            border-bottom: 3px solid #0645ad;
         }
     </style>
 </head>
 <body>
-    <div class="container mt-4">
-        <div class="row justify-content-center">
-            <div class="col-lg-10">
-                <div class="main-card">
-                    <!-- Header -->
-                    <div class="header-gradient text-center py-5">
-                        <h1 class="display-4 fw-bold mb-3">
-                            <i class="fas fa-file-pdf me-3"></i>Lintas Pasal
-                        </h1>
-                        <p class="lead mb-0">Konversi Dokumen PDF Menjadi Format Digital yang Mudah Dibaca</p>
-                    </div>
-                    
+
+<div class="container-fluid px-0">
+    <div class="row justify-content-center mx-0">
+        <div class="col-12 col-lg-10">
+            <!-- Header -->
+            <div class="glass-card wiki-header text-center p-4 mb-4">
+                <h1 class="display-4 mb-3 text-wiki-dark">
+                    <i class="fas fa-file-pdf me-2 text-wiki-primary"></i>Lintas Pasal
+                </h1>
+                <p class="lead mb-0 text-wiki-secondary">Konversi Dokumen PDF Menjadi Format Digital</p>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="glass-card p-4">
+                <div class="row">
                     <!-- Upload Section -->
-                    <div class="p-5">
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <h3 class="mb-4 text-primary">
-                                    <i class="fas fa-cloud-upload-alt me-2"></i>Upload PDF
-                                </h3>
-                                
-                                <!-- Upload Form -->
-                                <form id="uploadForm" enctype="multipart/form-data">
-                                    <div class="upload-area text-center p-5 mb-4" onclick="document.getElementById('pdfFile').click()">
-                                        <div id="uploadContent">
-                                            <i class="fas fa-cloud-upload-alt text-primary mb-3" style="font-size: 3rem;"></i>
-                                            <h5 class="text-primary mb-2">Klik atau Drag & Drop PDF</h5>
-                                            <p class="text-muted mb-0">File maksimal 10MB</p>
-                                        </div>
-                                        <input type="file" id="pdfFile" name="pdf" accept=".pdf" style="display: none;">
-                                    </div>
-                                    
-                                    <!-- Progress Bar -->
-                                    <div id="progressContainer" class="mb-4" style="display: none;">
-                                        <div class="progress" style="height: 25px;">
-                                            <div id="progressBar" class="progress-bar progress-animated" role="progressbar" 
-                                                 style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                                                <span id="progressText">0%</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Upload Button -->
-                                    <div class="d-grid">
-                                        <button type="submit" id="uploadBtn" class="btn btn-gradient btn-lg" disabled>
-                                            <i class="fas fa-upload me-2"></i>Upload & Parse PDF
-                                        </button>
-                                    </div>
-                                </form>
+                    <div class="col-12 col-lg-6 mb-4 mb-lg-0">
+                        <h3 class="mb-4 text-wiki-dark">
+                            <i class="fas fa-cloud-upload-alt me-2 text-wiki-primary"></i>Upload PDF
+                        </h3>
+                        
+                        <form id="uploadForm" enctype="multipart/form-data">
+                            <div class="upload-area text-center mb-4 p-4 border-3 border-dashed rounded" 
+                                 style="cursor: pointer;"
+                                 onclick="document.getElementById('pdfFile').click()">
+                                <div id="uploadContent">
+                                    <i class="fas fa-cloud-upload-alt text-wiki-primary mb-3" style="font-size: 3rem;"></i>
+                                    <h5 class="text-wiki-primary mb-2">Klik atau Drag & Drop PDF</h5>
+                                    <p class="text-wiki-secondary mb-0">File maksimal 10MB</p>
+                                </div>
+                                <input type="file" id="pdfFile" name="pdf" accept=".pdf" style="display: none;">
                             </div>
                             
-                            <div class="col-lg-6">
-                                <h3 class="mb-4 text-success">
-                                    <i class="fas fa-list me-2"></i>File Tersimpan
-                                </h3>
-                                
-                                <!-- File List -->
-                                <div id="fileList" class="border rounded p-3" style="max-height: 400px; overflow-y: auto;">
-                                    <div class="text-center text-muted">
-                                        <i class="fas fa-folder-open mb-2" style="font-size: 2rem;"></i>
-                                        <p>Memuat daftar file...</p>
+                            <div id="progressContainer" class="mb-4" style="display: none;">
+                                <div class="progress" style="height: 25px;">
+                                    <div id="progressBar" class="progress-bar" role="progressbar" 
+                                         style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                        <span id="progressText">0%</span>
                                     </div>
                                 </div>
-                                
-                                <!-- Refresh Button -->
-                                <div class="d-grid mt-3">
-                                    <button onclick="loadFileList()" class="btn btn-outline-primary">
-                                        <i class="fas fa-sync-alt me-2"></i>Refresh Daftar File
-                                    </button>
-                                </div>
                             </div>
+                            
+                            <div class="d-grid">
+                                <button type="submit" id="uploadBtn" class="btn btn-gradient btn-lg" disabled>
+                                    <i class="fas fa-upload me-2"></i>Upload & Parse PDF
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- File List Section -->
+                    <div class="col-12 col-lg-6">
+                        <h3 class="mb-4 text-wiki-dark">
+                            <i class="fas fa-list me-2 text-wiki-primary"></i>File Tersimpan
+                        </h3>
+                        
+                        <div id="fileList" class="border rounded p-3 bg-white" style="max-height: 400px; overflow-y: auto;">
+                            <div class="text-center text-wiki-secondary">
+                                <i class="fas fa-folder-open mb-2 text-wiki-primary" style="font-size: 2rem;"></i>
+                                <p>Memuat daftar file...</p>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid mt-3">
+                            <button onclick="loadFileList()" class="btn btn-outline-light">
+                                <i class="fas fa-sync-alt me-2"></i>Refresh Daftar File
+                            </button>
                         </div>
                     </div>
                 </div>
-                
-                <!-- Features Section -->
-                <div class="main-card mt-4">
-                    <div class="p-5">
-                        <h3 class="text-center mb-5 text-primary">
-                            <i class="fas fa-star me-2"></i>Fitur Unggulan
-                        </h3>
-                        <div class="row">
-                            <div class="col-md-4 text-center mb-4">
-                                <div class="card h-100 border-0 shadow-sm">
-                                    <div class="card-body">
-                                        <i class="fas fa-magic text-primary mb-3" style="font-size: 2.5rem;"></i>
-                                        <h5 class="card-title">Parser Otomatis</h5>
-                                        <p class="card-text">Ekstraksi teks otomatis dengan preservasi layout dokumen PDF</p>
-                                    </div>
-                                </div>
+            </div>
+            
+            <!-- Features Section -->
+            <div class="glass-card p-4 mt-4">
+                <h3 class="text-center mb-4 text-wiki-dark">
+                    <i class="fas fa-star me-2 text-wiki-primary"></i>Fitur Unggulan
+                </h3>
+                <div class="row g-3">
+                    <div class="col-12 col-md-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center">
+                                <i class="fas fa-magic text-wiki-primary mb-3" style="font-size: 2.5rem;"></i>
+                                <h5 class="card-title">Parser Otomatis</h5>
+                                <p class="card-text">Ekstraksi teks otomatis dengan preservasi layout</p>
                             </div>
-                            <div class="col-md-4 text-center mb-4">
-                                <div class="card h-100 border-0 shadow-sm">
-                                    <div class="card-body">
-                                        <i class="fas fa-search text-success mb-3" style="font-size: 2.5rem;"></i>
-                                        <h5 class="card-title">Navigasi Cerdas</h5>
-                                        <p class="card-text">Deteksi otomatis BAB dan Pasal untuk navigasi yang mudah</p>
-                                    </div>
-                                </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center">
+                                <i class="fas fa-search text-success mb-3" style="font-size: 2.5rem;"></i>
+                                <h5 class="card-title">Navigasi Cerdas</h5>
+                                <p class="card-text">Deteksi otomatis BAB dan Pasal</p>
                             </div>
-                            <div class="col-md-4 text-center mb-4">
-                                <div class="card h-100 border-0 shadow-sm">
-                                    <div class="card-body">
-                                        <i class="fas fa-mobile-alt text-warning mb-3" style="font-size: 2.5rem;"></i>
-                                        <h5 class="card-title">Responsif</h5>
-                                        <p class="card-text">Tampilan optimal di desktop, tablet, dan smartphone</p>
-                                    </div>
-                                </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center">
+                                <i class="fas fa-mobile-alt text-warning mb-3" style="font-size: 2.5rem;"></i>
+                                <h5 class="card-title">Responsif</h5>
+                                <p class="card-text">Optimal di semua perangkat</p>
                             </div>
                         </div>
                     </div>
@@ -190,202 +144,10 @@
             </div>
         </div>
     </div>
-    
-    <!-- Footer -->
-    <footer class="text-center text-white py-4 mt-5">
-        <div class="container">
-            <p class="mb-0">© 2025 Lintas Pasal - PDF Parser & Viewer</p>
-        </div>
-    </footer>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // File selection and upload handling
-        const pdfFile = document.getElementById('pdfFile');
-        const uploadBtn = document.getElementById('uploadBtn');
-        const uploadForm = document.getElementById('uploadForm');
-        const uploadArea = document.querySelector('.upload-area');
-        const progressContainer = document.getElementById('progressContainer');
-        const progressBar = document.getElementById('progressBar');
-        const progressText = document.getElementById('progressText');
-
-        // File input change event
-        pdfFile.addEventListener('change', function() {
-            if (this.files.length > 0) {
-                const file = this.files[0];
-                uploadBtn.disabled = false;
-                document.getElementById('uploadContent').innerHTML = `
-                    <i class="fas fa-file-pdf text-success mb-3" style="font-size: 3rem;"></i>
-                    <h5 class="text-success mb-2">${file.name}</h5>
-                    <p class="text-muted mb-0">${(file.size / 1024 / 1024).toFixed(2)} MB</p>
-                `;
-            }
-        });
-
-        // Drag and drop functionality
-        uploadArea.addEventListener('dragover', function(e) {
-            e.preventDefault();
-            this.classList.add('dragover');
-        });
-
-        uploadArea.addEventListener('dragleave', function(e) {
-            e.preventDefault();
-            this.classList.remove('dragover');
-        });
-
-        uploadArea.addEventListener('drop', function(e) {
-            e.preventDefault();
-            this.classList.remove('dragover');
-            
-            const files = e.dataTransfer.files;
-            if (files.length > 0 && files[0].type === 'application/pdf') {
-                pdfFile.files = files;
-                pdfFile.dispatchEvent(new Event('change'));
-            } else {
-                alert('Harap pilih file PDF yang valid!');
-            }
-        });
-
-        // Form submission
-        uploadForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            if (!pdfFile.files.length) {
-                alert('Pilih file PDF terlebih dahulu!');
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('pdf', pdfFile.files[0]);
-
-            uploadBtn.disabled = true;
-            uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Uploading...';
-            progressContainer.style.display = 'block';
-
-            try {
-                const xhr = new XMLHttpRequest();
-                
-                xhr.upload.addEventListener('progress', function(e) {
-                    if (e.lengthComputable) {
-                        const percentComplete = (e.loaded / e.total) * 100;
-                        progressBar.style.width = percentComplete + '%';
-                        progressBar.setAttribute('aria-valuenow', percentComplete);
-                        progressText.textContent = Math.round(percentComplete) + '%';
-                    }
-                });
-
-                xhr.onload = function() {
-                    if (xhr.status === 200) {
-                        const response = JSON.parse(xhr.responseText);
-                        if (response.success) {
-                            alert('✅ File berhasil diupload dan diproses!');
-                            
-                            // Reset form
-                            uploadForm.reset();
-                            uploadBtn.disabled = true;
-                            uploadBtn.innerHTML = '<i class="fas fa-upload me-2"></i>Upload & Parse PDF';
-                            progressContainer.style.display = 'none';
-                            document.getElementById('uploadContent').innerHTML = `
-                                <i class="fas fa-cloud-upload-alt text-primary mb-3" style="font-size: 3rem;"></i>
-                                <h5 class="text-primary mb-2">Klik atau Drag & Drop PDF</h5>
-                                <p class="text-muted mb-0">File maksimal 10MB</p>
-                            `;
-                            
-                            // Reload file list
-                            loadFileList();
-                            
-                            // Show view option
-                            if (confirm('File berhasil diproses! Ingin melihat hasilnya sekarang?')) {
-                                window.open(`/api/view/${response.data.filename}`, '_blank');
-                            }
-                        } else {
-                            alert('❌ Error: ' + response.message);
-                        }
-                    } else {
-                        alert('❌ Terjadi kesalahan saat upload');
-                    }
-                    
-                    uploadBtn.disabled = false;
-                    uploadBtn.innerHTML = '<i class="fas fa-upload me-2"></i>Upload & Parse PDF';
-                    progressContainer.style.display = 'none';
-                };
-
-                xhr.onerror = function() {
-                    alert('❌ Terjadi kesalahan jaringan');
-                    uploadBtn.disabled = false;
-                    uploadBtn.innerHTML = '<i class="fas fa-upload me-2"></i>Upload & Parse PDF';
-                    progressContainer.style.display = 'none';
-                };
-
-                xhr.open('POST', '/api/upload');
-                xhr.send(formData);
-
-            } catch (error) {
-                alert('❌ Error: ' + error.message);
-                uploadBtn.disabled = false;
-                uploadBtn.innerHTML = '<i class="fas fa-upload me-2"></i>Upload & Parse PDF';
-                progressContainer.style.display = 'none';
-            }
-        });
-
-        // Load file list
-        async function loadFileList() {
-            const fileList = document.getElementById('fileList');
-            fileList.innerHTML = `
-                <div class="text-center text-muted">
-                    <i class="fas fa-spinner fa-spin mb-2" style="font-size: 2rem;"></i>
-                    <p>Memuat daftar file...</p>
-                </div>
-            `;
-
-            try {
-                const response = await fetch('/api/files');
-                const data = await response.json();
-
-                if (data.success && data.files.length > 0) {
-                    fileList.innerHTML = data.files.map(file => `
-                        <div class="file-list-item border rounded p-3 mb-2 bg-light">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 class="mb-1 text-primary">
-                                        <i class="fas fa-file-pdf me-2"></i>${file.filename}
-                                    </h6>
-                                    <small class="text-muted">
-                                        ${(file.size / 1024 / 1024).toFixed(2)} MB • 
-                                        ${new Date(file.uploadDate).toLocaleDateString('id-ID')}
-                                    </small>
-                                </div>
-                                <div class="btn-group btn-group-sm">
-                                    <a href="/api/view/${file.filename}" target="_blank" class="btn btn-primary btn-sm">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    <a href="/api/download/${file.filename}" class="btn btn-success btn-sm">
-                                        <i class="fas fa-download"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    `).join('');
-                } else {
-                    fileList.innerHTML = `
-                        <div class="text-center text-muted">
-                            <i class="fas fa-folder-open mb-2" style="font-size: 2rem;"></i>
-                            <p>Belum ada file PDF yang diupload</p>
-                        </div>
-                    `;
-                }
-            } catch (error) {
-                fileList.innerHTML = `
-                    <div class="text-center text-danger">
-                        <i class="fas fa-exclamation-triangle mb-2" style="font-size: 2rem;"></i>
-                        <p>Gagal memuat daftar file</p>
-                    </div>
-                `;
-            }
-        }
-
-        // Load file list on page load
-        document.addEventListener('DOMContentLoaded', loadFileList);
-    </script>
+<%- include('partials/footer', { footerClass: 'position-fixed bottom-0 w-100 text-center py-3' }) %>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/javascripts/app.js"></script>
 </body>
 </html>
