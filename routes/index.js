@@ -15,4 +15,10 @@ router.get('/test', function(req, res, next) {
   });
 });
 
+/* GET hasil parsing page redirect. */
+router.get('/hasil/:filename', function(req, res, next) {
+  // Redirect to API view route which will use the hasil.ejs template
+  res.redirect(`/api/view/${req.params.filename}`);
+});
+
 module.exports = router;
