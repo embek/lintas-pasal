@@ -156,6 +156,10 @@ body {
     color: #d33;
 }
 
+.error-icon-large {
+    font-size: 5rem;
+}
+
 @keyframes pulse {
     0% { transform: scale(1); }
     50% { transform: scale(1.05); }
@@ -560,4 +564,65 @@ footer .github-link:hover i {
     .ayat-number { 
         background: #000 !important; 
     }
+}
+
+/* ===== ADDITIONAL UTILITY CLASSES ===== */
+/* Layout utilities */
+.min-vh-85 {
+    min-height: 85vh;
+}
+
+.homepage-card {
+    margin: 0 10px;
+}
+
+/* Upload area styles */
+.upload-icon {
+    font-size: 3rem;
+}
+
+.file-icon {
+    font-size: 2rem;
+}
+
+.file-list-container {
+    border: 1px solid #a2a9b1;
+    border-radius: 2px;
+    padding: 1rem;
+    background: #ffffff;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.progress-lg {
+    height: 25px;
+}
+
+/* Feature items */
+.feature-item {
+    transition: transform 0.2s ease;
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+.feature-item:hover {
+    transform: translateY(-2px);
+    background: rgba(6, 69, 173, 0.05);
+}
+
+/* File list item styles */
+.file-list-item {
+    transition: all 0.2s ease;
+}
+
+.file-list-item:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Drag and drop states */
+.upload-area.dragover {
+    background: #eaecf0;
+    border-color: #0645ad;
+    transform: scale(1.02);
 }

@@ -11,74 +11,74 @@
 <body class="d-flex flex-column min-vh-100">
 
 <div class="flex-grow-1">
-<div class="container-fluid px-0">
-    <div class="row justify-content-center mx-0" style="min-height: 85vh;">
-        <div class="col-12 col-lg-10">
-            <!-- Header -->
-            <div class="glass-card wiki-header text-center p-4 mb-4">
-                <a href="/" class="text-decoration-none">
-                    <h1 class="display-4 mb-3 text-wiki-dark">
-                        <i class="fas fa-file-pdf me-2 text-wiki-primary"></i>Lintas Pasal
-                    </h1>
-                </a>
-                <p class="lead mb-0 text-wiki-secondary">Konversi dokumen peraturan dari PDF menjadi format digital yang mudah dinavigasi</p>
-            </div>
-            
-            <!-- Main Content -->
-            <div class="glass-card p-4">
-                <div class="row">
-                    <!-- Upload Section -->
-                    <div class="col-12 col-lg-6 mb-4 mb-lg-0">
-                        <h3 class="mb-4 text-wiki-dark">
-                            <i class="fas fa-cloud-upload-alt me-2 text-wiki-primary"></i>Upload PDF
-                        </h3>
-                        
-                        <form id="uploadForm" enctype="multipart/form-data">
-                            <div class="upload-area text-center mb-4 p-4 border-3 border-dashed rounded" 
-                                 style="cursor: pointer;"
-                                 onclick="document.getElementById('pdfFile').click()">
-                                <div id="uploadContent">
-                                    <i class="fas fa-cloud-upload-alt text-wiki-primary mb-3" style="font-size: 3rem;"></i>
-                                    <h5 class="text-wiki-primary mb-2">Klik atau Drag & Drop PDF</h5>
-                                    <p class="text-wiki-secondary mb-0">File maksimal 10MB</p>
-                                </div>
-                                <input type="file" id="pdfFile" name="pdf" accept=".pdf" style="display: none;">
-                            </div>
+    <div class="container-fluid px-0">
+        <div class="row justify-content-center mx-0 min-vh-85">
+            <div class="col-12 col-lg-10">
+                <!-- Header -->
+                <div class="glass-card wiki-header text-center p-4 mb-4">
+                    <a href="/" class="text-decoration-none">
+                        <h1 class="display-4 mb-3 text-wiki-dark">
+                            <i class="fas fa-file-pdf me-2 text-wiki-primary"></i>Lintas Pasal
+                        </h1>
+                    </a>
+                    <p class="lead mb-0 text-wiki-secondary">Konversi dokumen peraturan dari PDF menjadi format digital yang mudah dinavigasi</p>
+                </div>
+                
+                <!-- Main Content -->
+                <div class="glass-card p-4">
+                    <div class="row">
+                        <!-- Upload Section -->
+                        <div class="col-12 col-lg-6 mb-4 mb-lg-0">
+                            <h3 class="mb-4 text-wiki-dark">
+                                <i class="fas fa-cloud-upload-alt me-2 text-wiki-primary"></i>Upload PDF
+                            </h3>
                             
-                            <div id="progressContainer" class="mb-4" style="display: none;">
-                                <div class="progress" style="height: 25px;">
-                                    <div id="progressBar" class="progress-bar" role="progressbar" 
-                                         style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                                        <span id="progressText">0%</span>
+                            <form id="uploadForm" enctype="multipart/form-data">
+                                <div class="upload-area text-center mb-4 p-4 border-3 border-dashed rounded cursor-pointer"
+                                     onclick="document.getElementById('pdfFile').click()">
+                                    <div id="uploadContent">
+                                        <i class="fas fa-cloud-upload-alt text-wiki-primary mb-3 upload-icon"></i>
+                                        <h5 class="text-wiki-primary mb-2">Klik atau Drag & Drop PDF</h5>
+                                        <p class="text-wiki-secondary mb-0">File maksimal 10MB</p>
+                                    </div>
+                                    <input type="file" id="pdfFile" name="pdf" accept=".pdf" class="d-none">
+                                </div>
+                                
+                                <div id="progressContainer" class="mb-4 d-none">
+                                    <div class="progress progress-lg">
+                                        <div id="progressBar" class="progress-bar" role="progressbar" 
+                                             aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                            <span id="progressText">0%</span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            
-                            <div class="d-grid">
-                                <button type="submit" id="uploadBtn" class="btn btn-gradient btn-lg" disabled>
-                                    <i class="fas fa-upload me-2"></i>Upload & Parse PDF
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                    
-                    <!-- File List Section -->
-                    <div class="col-12 col-lg-6">
-                        <h3 class="mb-4 text-wiki-dark">
-                            <i class="fas fa-list me-2 text-wiki-primary"></i>File Tersimpan
-                        </h3>
-                        
-                        <div id="fileList" class="border rounded p-3 bg-white" style="max-height: 400px; overflow-y: auto;">
-                            <div class="text-center text-wiki-secondary">
-                                <i class="fas fa-folder-open mb-2 text-wiki-primary" style="font-size: 2rem;"></i>
-                                <p>Memuat daftar file...</p>
-                            </div>
+                                
+                                <div class="d-grid">
+                                    <button type="submit" id="uploadBtn" class="btn btn-gradient btn-lg" disabled>
+                                        <i class="fas fa-upload me-2"></i>Upload & Parse PDF
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                         
-                        <div class="d-grid mt-3">
-                            <button onclick="loadFileList()" class="btn btn-outline-light">
-                                <i class="fas fa-sync-alt me-2"></i>Refresh Daftar File
-                            </button>
+                        <!-- File List Section -->
+                        <div class="col-12 col-lg-6">
+                            <h3 class="mb-4 text-wiki-dark">
+                                <i class="fas fa-list me-2 text-wiki-primary"></i>File Tersimpan
+                            </h3>
+                            
+                            <div id="fileList" class="file-list-container">
+                                <div class="text-center text-wiki-secondary">
+                                    <i class="fas fa-folder-open mb-2 text-wiki-primary file-icon"></i>
+                                    <p>Memuat daftar file...</p>
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid mt-3">
+                                <button onclick="loadFileList()" class="btn btn-outline-light">
+                                    <i class="fas fa-sync-alt me-2"></i>Refresh Daftar File
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -86,10 +86,10 @@
         </div>
     </div>
 </div>
-</div>
 
 <%- include('partials/footer', { footerClass: 'mt-auto w-100 text-center py-3' }) %>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="/javascripts/app.js"></script>
 </body>
+</html>
 </html>

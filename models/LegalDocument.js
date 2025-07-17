@@ -80,149 +80,143 @@ class LegalDocument {
     let currentPasal = null;
     let currentAyat = [];
 
-    // Enhanced regex patterns
-    const regexIgnore = /^\s*(DAFTAR ISI|LAMPIRAN|PENJELASAN|BERITA NEGARA|LEMBARAN NEGARA|jdih\.pu\.go\.id|Menimbang|Mengingat|www\.|^\d{4}, No\.?\d+|^\d{1,3}\s*-?$|KEMENTERIAN|PRESIDEN|UNDANG-UNDANG|PERATURAN|RI|PENDAHULUAN|TAMBAHAN LEMBARAN NEGARA|DENGAN RAHMAT|MEMUTUSKAN|MENETAPKAN|KEPUTUSAN|SALINAN|PERATURAN MENTERI|PERATURAN PEMERINTAH)/i;
-    const regexBab = /^BAB\s+([IVXLCDM]+|[0-9]+)\b/i;
-    const regexPasal = /^(Pasal\s+\d+[A-Z]*)/i;
-    const regexBagian = /^(Bagian\s+(Kesatu|Kedua|Ketiga|Keempat|Kelima|Keenam|Ketujuh|Kedelapan|Kesembilan|Kesepuluh|[A-Za-z\s]+)|Subbagian\s+\w+|Paragraf\s+\d+)/i;
-    const regexKetentuan = /^(Ketentuan\s+Umum|Ketentuan\s+Khusus|Ketentuan\s+Peralihan|Ketentuan\s+Penutup)\b/i;
-    const regexAyat = /^\(\d+\)\s*/;
-    const regexPageNumber = /^\s*\d+\s*$/;
+    // Enhanced regex patterns - organized and documented
+    const regexPatterns = {
+        ignore: /^\s*(DAFTAR ISI|LAMPIRAN|PENJELASAN|BERITA NEGARA|LEMBARAN NEGARA|jdih\.pu\.go\.id|Menimbang|Mengingat|www\.|^\d{4}, No\.?\d+|^\d{1,3}\s*-?$|KEMENTERIAN|PRESIDEN|UNDANG-UNDANG|PERATURAN|RI|PENDAHULUAN|TAMBAHAN LEMBARAN NEGARA|DENGAN RAHMAT|MEMUTUSKAN|MENETAPKAN|KEPUTUSAN|SALINAN|PERATURAN MENTERI|PERATURAN PEMERINTAH)/i,
+        bab: /^BAB\s+([IVXLCDM]+|[0-9]+)\b/i,
+        pasal: /^(Pasal\s+\d+[A-Z]*)/i,
+        bagian: /^(Bagian\s+(Kesatu|Kedua|Ketiga|Keempat|Kelima|Keenam|Ketujuh|Kedelapan|Kesembilan|Kesepuluh|[A-Za-z\s]+)|Subbagian\s+\w+|Paragraf\s+\d+)/i,
+        ketentuan: /^(Ketentuan\s+Umum|Ketentuan\s+Khusus|Ketentuan\s+Peralihan|Ketentuan\s+Penutup)\b/i,
+        ayat: /^\(\d+\)\s*/,
+        pageNumber: /^\s*\d+\s*$/
+    };
 
     // Helper function to save current pasal
     const saveCurrentPasal = () => {
-      if (currentPasal && currentAyat.length > 0) {
-        const cleanedAyat = currentAyat.map(ayat => ayat.trim()).filter(ayat => ayat.length > 0);
-        
-        if (currentBagian) {
-          if (!result[currentBab].bagian[currentBagian].pasal) {
-            result[currentBab].bagian[currentBagian].pasal = {};
-          }
-          result[currentBab].bagian[currentBagian].pasal[currentPasal] = {
-            isi: cleanedAyat
-          };
-        } else {
-          result[currentBab].bagian[currentPasal] = {
-            isi: cleanedAyat
-          };
-        }
-        
-        currentAyat = [];
-      }
-    };
-
-    for (let i = 0; i < lines.length; i++) {
-      let line = lines[i].trim();
-
-      // Skip empty lines and ignored patterns
-      if (!line || regexIgnore.test(line) || regexPageNumber.test(line)) {
-        continue;
-      }
-
-      // Detect content start
-      if (!isInContent && (regexBab.test(line) || regexPasal.test(line))) {
-        isInContent = true;
-      }
-
-      if (isInContent) {
-        // Handle BAB sections
-        const babMatch = regexBab.exec(line);
-        if (babMatch) {
-          saveCurrentPasal();
-          
-          const babKey = `BAB ${babMatch[1]}`;
-          currentBab = babKey;
-          currentBagian = null;
-          currentPasal = null;
-          
-          // Look for BAB title
-          let judulBab = '';
-          let nextLineIndex = i + 1;
-          
-          while (nextLineIndex < lines.length) {
-            const nextLine = lines[nextLineIndex].trim();
-            if (!nextLine) {
-              nextLineIndex++;
-              continue;
+        if (currentPasal && currentAyat.length > 0) {
+            const cleanedAyat = currentAyat
+                .map(ayat => ayat.trim())
+                .filter(ayat => ayat.length > 0);
+            
+            const targetLocation = currentBagian 
+                ? result[currentBab].bagian[currentBagian]
+                : result[currentBab].bagian;
+                
+            if (currentBagian) {
+                if (!targetLocation.pasal) {
+                    targetLocation.pasal = {};
+                }
+                targetLocation.pasal[currentPasal] = { isi: cleanedAyat };
+            } else {
+                targetLocation[currentPasal] = { isi: cleanedAyat };
             }
             
-            if (!regexBab.test(nextLine) && !regexPasal.test(nextLine) && 
-                !regexBagian.test(nextLine) && !regexKetentuan.test(nextLine) && 
-                nextLine.length > 3 && !regexPageNumber.test(nextLine)) {
-              judulBab = nextLine;
-              i = nextLineIndex;
-              break;
+            currentAyat = [];
+        }
+    };
+
+    // Helper function to find next non-empty title
+    const findNextTitle = (startIndex, excludePatterns = []) => {
+        for (let i = startIndex + 1; i < lines.length; i++) {
+            const line = lines[i].trim();
+            
+            if (!line) continue;
+            
+            const shouldExclude = excludePatterns.some(pattern => pattern.test(line));
+            if (shouldExclude || regexPatterns.pageNumber.test(line)) continue;
+            
+            if (line.length > 3) {
+                return { title: line, index: i };
             }
             break;
-          }
-          
-          result[currentBab] = {
-            judul: judulBab,
-            bagian: {}
-          };
-          continue;
+        }
+        return { title: '', index: startIndex };
+    };
+
+    // Main parsing loop
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+
+        // Skip empty lines and ignored patterns
+        if (!line || regexPatterns.ignore.test(line) || regexPatterns.pageNumber.test(line)) {
+            continue;
+        }
+
+        // Detect content start
+        if (!isInContent && (regexPatterns.bab.test(line) || regexPatterns.pasal.test(line))) {
+            isInContent = true;
+        }
+
+        if (!isInContent) continue;
+
+        // Process different section types
+        const babMatch = regexPatterns.bab.exec(line);
+        if (babMatch) {
+            saveCurrentPasal();
+            
+            const babKey = `BAB ${babMatch[1]}`;
+            currentBab = babKey;
+            currentBagian = null;
+            currentPasal = null;
+            
+            const titleResult = findNextTitle(i, [
+                regexPatterns.bab, regexPatterns.pasal, 
+                regexPatterns.bagian, regexPatterns.ketentuan
+            ]);
+            
+            result[currentBab] = {
+                judul: titleResult.title,
+                bagian: {}
+            };
+            
+            i = titleResult.index;
+            continue;
         }
 
         // Handle Bagian/Ketentuan sections
-        const bagianMatch = regexBagian.exec(line) || regexKetentuan.exec(line);
+        const bagianMatch = regexPatterns.bagian.exec(line) || regexPatterns.ketentuan.exec(line);
         if (bagianMatch && currentBab) {
-          saveCurrentPasal();
-          
-          currentBagian = bagianMatch[1];
-          currentPasal = null;
-          
-          // Look for section title
-          let judulBagian = '';
-          let nextLineIndex = i + 1;
-          
-          while (nextLineIndex < lines.length) {
-            const nextLine = lines[nextLineIndex].trim();
-            if (!nextLine) {
-              nextLineIndex++;
-              continue;
-            }
+            saveCurrentPasal();
             
-            if (!regexBab.test(nextLine) && !regexPasal.test(nextLine) && 
-                !regexBagian.test(nextLine) && !regexKetentuan.test(nextLine) && 
-                nextLine.length > 3 && !regexPageNumber.test(nextLine)) {
-              judulBagian = nextLine;
-              i = nextLineIndex;
-              break;
-            }
-            break;
-          }
-          
-          result[currentBab].bagian[currentBagian] = {
-            judul: judulBagian,
-            pasal: {}
-          };
-          continue;
+            currentBagian = bagianMatch[1];
+            currentPasal = null;
+            
+            const titleResult = findNextTitle(i, [
+                regexPatterns.bab, regexPatterns.pasal, 
+                regexPatterns.bagian, regexPatterns.ketentuan
+            ]);
+            
+            result[currentBab].bagian[currentBagian] = {
+                judul: titleResult.title,
+                pasal: {}
+            };
+            
+            i = titleResult.index;
+            continue;
         }
 
         // Handle Pasal sections
-        const pasalMatch = regexPasal.exec(line);
+        const pasalMatch = regexPatterns.pasal.exec(line);
         if (pasalMatch && currentBab) {
-          saveCurrentPasal();
-          
-          currentPasal = pasalMatch[1];
-          currentAyat = [];
-          continue;
+            saveCurrentPasal();
+            currentPasal = pasalMatch[1];
+            currentAyat = [];
+            continue;
         }
 
         // Handle content lines
         if (currentBab && currentPasal && line.length > 3) {
-          if (regexAyat.test(line)) {
-            currentAyat.push(line);
-          } else {
-            if (currentAyat.length > 0) {
-              const lastIndex = currentAyat.length - 1;
-              currentAyat[lastIndex] += ' ' + line;
-            } else {
-              currentAyat.push(line);
-            }
-          }
+            if (regexPatterns.ayat.test(line)) {
+                currentAyat.push(line);
+              } else {
+                if (currentAyat.length > 0) {
+                  const lastIndex = currentAyat.length - 1;
+                  currentAyat[lastIndex] += ' ' + line;
+                } else {
+                  currentAyat.push(line);
+                }
+              }
         }
-      }
     }
 
     // Save the last pasal
